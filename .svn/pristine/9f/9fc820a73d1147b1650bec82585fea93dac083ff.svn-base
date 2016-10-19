@@ -1,0 +1,24 @@
+package edu.wm.cs.cs301.MackenzieMorrowFoster;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+
+public class FinishActivity extends Activity {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_finish);
+		Log.v("FinishActivity", "Created activity_finish");
+	}
+	
+	public void gotoAMazeActivity(View view) {
+		Intent intent = new Intent(this, AMazeActivity.class);
+		startActivity(intent);
+		Log.v("FinishActivity", "Created the intent to start again and move back to AMazeActivity");
+	}
+	
+}

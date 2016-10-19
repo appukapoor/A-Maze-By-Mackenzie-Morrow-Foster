@@ -1,0 +1,183 @@
+package edu.wm.cs.cs301.MackenzieMorrowFoster;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+
+public class PlayActivity extends Activity {
+	private Button pause = (Button) findViewById(R.id.button2);
+	private Button play = (Button) findViewById(R.id.button3);
+	private int energyLevel = 2500;
+	private ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+	private Intent intent;
+	private Button rightArrow = (Button) findViewById(R.id.imageButton1);
+	private Button leftArrow = (Button) findViewById(R.id.imageButton3);
+	private Button upArrow = (Button) findViewById(R.id.imageButton2);
+	private Button downArrow = (Button) findViewById(R.id.imageButton4);
+	
+	
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_play);
+		Log.v("PlayActivity", "Created activity_play");
+		
+		intent = getIntent();
+		intent.setClass(PlayActivity.this, FinishActivity.class);
+		
+		String driver = intent.getStringExtra("Driver");
+		if (driver.equals("Manual")) {
+			setRightArrow();
+			setLeftArrow();
+			setUpArrow();
+			setDownArrow();
+		}
+		else {
+			setUpPause();
+			setUpPlay();
+		}
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			finish();
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	//for the temporary button that takes us to the finish screen.
+	public void goToFinishActivity(View view) {
+		Intent intent = new Intent(this, FinishActivity.class);
+		startActivity(intent);
+		Log.v("PlayActivity", "Created the intent to move to FinishActivity");
+	}
+	
+	public void onToggleClicked(View view) {
+	    // Is the toggle on?
+	    boolean on = ((ToggleButton) view).isChecked();
+	    if (on) {
+	        Log.v("PlayActivity", "ToggleButton is on");
+	        Toast.makeText(getApplicationContext(), "Toggle On", Toast.LENGTH_SHORT).show();
+	    } else {
+	        Log.v("PlayActivity", "ToggleButton is off");
+	        Toast.makeText(getApplicationContext(), "Toggle Off", Toast.LENGTH_SHORT).show();
+	    }
+	}
+	
+	public void setRightArrow() {
+		rightArrow.setEnabled(true);
+		rightArrow.setVisibility(View.VISIBLE);
+		rightArrow.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				energyLevel -= 3;
+				progressBar.setProgress(energyLevel);
+				
+				if (energyLevel <= 0) {
+					startActivity(intent);
+					Log.v("PlayActivity", "SetRightArrow: Went Right");
+					Toast.makeText(PlayActivity.this, "Went Right", Toast.LENGTH_SHORT).show();
+				}	
+			}
+		});
+	}
+	
+	public void setLeftArrow() {
+		leftArrow.setEnabled(true);
+		leftArrow.setVisibility(View.VISIBLE);
+		leftArrow.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				energyLevel -= 3;
+				progressBar.setProgress(energyLevel);
+				
+				if (energyLevel <= 0) {
+					startActivity(intent);
+					Log.v("PlayActivity", "SetLeftArrow: Went Left");
+					Toast.makeText(PlayActivity.this, "Went Left", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+	}
+	
+	public void setUpArrow() {
+		upArrow.setEnabled(true);
+		upArrow.setVisibility(View.VISIBLE);
+		upArrow.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				energyLevel -= 3;
+				progressBar.setProgress(energyLevel);
+				
+				if (energyLevel <= 0) {
+					startActivity(intent);
+					Log.v("PlayActivity", "SetUpArrow: Went Forward");
+					Toast.makeText(PlayActivity.this, "Went Forward", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+	}
+	
+	public void setDownArrow() {
+		downArrow.setEnabled(true);
+		downArrow.setVisibility(View.VISIBLE);
+		downArrow.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				energyLevel -= 3;
+				progressBar.setProgress(energyLevel);
+				
+				if (energyLevel <= 0) {
+					startActivity(intent);
+					Log.v("PlayActivity", "SetDownArrow: Went Backwards");
+					Toast.makeText(PlayActivity.this, "Went Backwards", Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+	}
+	
+	public void setUpPause() {
+		pause.setEnabled(true);
+		pause.setVisibility(View.VISIBLE);
+		pause.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				pause.setEnabled(false);
+				play.setEnabled(true);
+				
+				pause.setVisibility(View.INVISIBLE);
+				play.setVisibility(View.VISIBLE);
+				
+				Log.v("PlayActivity", "SetUpPause: Paused");
+				Toast.makeText(PlayActivity.this, "Paused", Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
+	
+	public void setUpPlay() {
+		play.setEnabled(true);
+		play.setVisibility(View.VISIBLE);
+		play.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				play.setEnabled(false);
+				pause.setEnabled(true);
+				
+				play.setVisibility(View.INVISIBLE);
+				pause.setVisibility(View.VISIBLE);
+				
+				Log.v("PlayActivity", "SetUpPlay: Playing");
+				Toast.makeText(PlayActivity.this, "Playing", Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
+}

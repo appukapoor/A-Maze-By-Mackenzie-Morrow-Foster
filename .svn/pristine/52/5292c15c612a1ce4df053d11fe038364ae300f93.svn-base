@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AMazeByMackenzieMorrowFoster</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    
+    <string name="back_button">Back</string>
+    <string name="next_button">Next</string>
+    <string name="start_button">Start</string>
+	
+	<string name="game_title">Race to Class!</string>
+	<string name="intro_line">It\'s your first day of class in a new school! Navigate through the hallways to find your classroom. The professor left the door open for you, but only until the bell rings.</string>
+	<string name="make_it">Can you make it in time?</string>
+	
+	<string name="hurry_message">Better Hurry!</string>
+	<string name="difficulty_bar">Choose the Level of Difficulty</string>
+	<string name="mazebuilder">Selected Algorithm is: </string>
+	<string name="mazebuilder_prompt">Choose an Algorithm</string>
+	<string-array name="mazebuilder_array">
+	    <item>Random</item>
+	    <item>Falstad</item>
+	    <item>Prim</item>
+	    <item>Kruskal</item>
+	</string-array>
+	<string name="mazedriver_prompt">Driver Chosen is: </string>
+	<string-array name="mazedriver_array">
+	    <item>Manual</item>
+	    <item>WallFollower</item>
+	    <item>Wizard</item>
+	</string-array>
+	<string name="mazedriver">Select the Driver of the Maze</string>
+	<string name="load_maze">Load a Previous Maze</string>
+	
+	
+	<string name="waiting_title">Please Wait...</string>
+	<string name="waiting_message">We are constructing the maze of hallways you are about to be lost in.</string>
+	
+	<string name="pause_button">Pause</string>
+	<string name="play_button">Play</string>
+	<string name="energy_level">Energy Level: 2500</string>
+	
+	<string name="congrats_title">Congratulations!</string>
+	<string name="congrats_message">You Have Made It to Class On Time! Now grab a seat and get ready to learn.</string>
+	<string name="play_again">Play Again</string>
+	<string name="energy_consumed">Energy Consumed</string>
+	<string name="steps_taken">Steps Taken</string>
+	
+
+</resources>

@@ -1,0 +1,79 @@
+package edu.wm.cs.cs301.MackenzieMorrowFoster.ui;
+
+import edu.wm.cs.cs301.MackenzieMorrowFoster.R;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+
+public class PlayActivity extends Activity {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_play);
+		Log.v("PlayActivity", "Created activity_play");
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			finish();
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	public void gotoFinishActivity(View view) {
+		Intent intent = new Intent(this, FinishActivity.class);
+		startActivity(intent);
+		Log.v("PlayActivity", "Created the intent to move to FinishActivity");
+	}
+	
+	/**
+	 * Sets up the toggle switch to toggle on/off maps
+	 */
+	public void onMazeToggleClicked(View view) {
+		boolean on = ((ToggleButton) view).isChecked();
+	    if (on) {
+	        Log.v("PlayActivity", "ToggleButton is on");
+	        Toast.makeText(getApplicationContext(), "Toggle On", Toast.LENGTH_SHORT).show();
+	    } else {
+	        Log.v("PlayActivity", "ToggleButton is off");
+	        Toast.makeText(getApplicationContext(), "Toggle Off", Toast.LENGTH_SHORT).show();
+	    }
+	}
+	
+	/**
+	 * Sets up the toggle switch to toggle on/off the solution
+	 */
+	public void onSolutionToggleClicked(View view) {
+		boolean on = ((ToggleButton) view).isChecked();
+	    if (on) {
+	        Log.v("PlayActivity", "ToggleButton is on");
+	        Toast.makeText(getApplicationContext(), "Toggle On", Toast.LENGTH_SHORT).show();
+	    } else {
+	        Log.v("PlayActivity", "ToggleButton is off");
+	        Toast.makeText(getApplicationContext(), "Toggle Off", Toast.LENGTH_SHORT).show();
+	    }
+	}
+	
+	
+	/**
+	 * Sets up the toggle switch to toggle on/off the walls
+	 */
+	public void onWallToggleClicked(View view) {
+		boolean on = ((ToggleButton) view).isChecked();
+	    if (on) {
+	        Log.v("PlayActivity", "ToggleButton is on");
+	        Toast.makeText(getApplicationContext(), "Toggle On", Toast.LENGTH_SHORT).show();
+	    } else {
+	        Log.v("PlayActivity", "ToggleButton is off");
+	        Toast.makeText(getApplicationContext(), "Toggle Off", Toast.LENGTH_SHORT).show();
+	    }
+	}
+	
+}

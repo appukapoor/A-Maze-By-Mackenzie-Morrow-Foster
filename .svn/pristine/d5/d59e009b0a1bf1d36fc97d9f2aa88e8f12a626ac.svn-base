@@ -1,0 +1,15 @@
+package edu.wm.cs.cs301.MackenzieMorrowFoster;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
+
+public class AMazeActivity extends Activity {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_a_maze);
+		Log.v("AMazeActivity", "Created activity_a_maze");
+	}
+}

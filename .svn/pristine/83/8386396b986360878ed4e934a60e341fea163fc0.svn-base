@@ -1,0 +1,260 @@
+package edu.wm.cs.cs301.MackenzieMorrowFoster.falstad;
+
+import java.util.Arrays;
+
+/**
+ * Class to implement the wall follower strategy to find an exit in a perfect maze.
+ * In this context, rooms establish a maze that is not perfect, i.e., a maze 
+ * were loops are possible. The wall follower is not able to recognize it.
+ * A loop can cause the wall follower to proceed looping until the robot
+ * runs out of energy.
+ * @author pk
+ *
+ */
+public class WallFollower implements RobotDriver {
+
+	Robot robot;
+	int num_steps;
+	float battery_level_at_beginning ;
+	
+	public WallFollower() {
+		robot = null;
+		num_steps = 0;
+	}
+
+	@Override
+	public void setRobot(Robot r) {
+		robot = r;
+		battery_level_at_beginning = r.getBatteryLevel() ;
+		num_steps = 0 ; // reset of driver is operated again
+		
+		System.out.println("Beginning battery level: " + battery_level_at_beginning) ;
+	}
+
+	@Override
+	public void setDimensions(int width, int height) {
+		// information not needed for wall follower
+	}
+
+	@Override
+	public void setDistance(Distance distance) {
+		// distance information not needed for wall follower
+	}
+	
+	@Override
+	public boolean drive2Exit() throws Exception {
+		if (null == robot) {
+			throw new Exception("robot.drive2exit: no robot, use method setRobot() before!") ;			
+		}
+		// special case 1: start in the middle of a room: find exit and leave
+		if (robot.isInsideRoom()) {
+			// make robot leave the room
+			leaveRoom() ;
+			// robot is outside of room
+		}
+		// general case: search for the exit / goal position
+		while (!robot.isAtGoal()) {
+			// case 1: can see goal left or forward: go for it
+			if (robot.canSeeGoal(Robot.Direction.LEFT)){
+				robot.rotate(Robot.Turn.LEFT);
+				drive2GoalAhead();
+				// robot is at exit position
+				continue ;
+			}
+			if (robot.canSeeGoal(Robot.Direction.FORWARD)){
+				drive2GoalAhead();
+				// robot is at exit position
+				continue ;
+			}
+			// robot does not check for goal on right side or back side.
+			
+			// case 2: just entered a room, find next exit and leave
+			if (robot.isInsideRoom()) {
+				// make robot leave the room
+				leaveRoomJustEntered() ;
+				// robot is outside of room
+				continue ;
+			}
+			// case 3: can turn left: turn and move forward
+			if (0 < robot.distanceToObstacle(Robot.Direction.LEFT)) {
+				robot.rotate(Robot.Turn.LEFT);
+				move1StepForward();
+				continue ;
+			}
+			// case 4: can not turn left but forward: move forward
+			if (0 < robot.distanceToObstacle(Robot.Direction.FORWARD)) {
+				move1StepForward();
+				continue ;
+			}
+			// case 5: can not turn left or forward: turn right
+			robot.rotate(Robot.Turn.RIGHT);
+		}
+		// at exit position: rotate towards exit and stop
+		rotateRobot2FaceExit();
+		
+		return true ;
+	}
+
+	protected void rotateRobot2FaceExit() throws Exception {
+		while(!robot.canSeeGoal(Robot.Direction.FORWARD))
+			robot.rotate(Robot.Turn.RIGHT);
+		// perform final step
+		move1StepForward();
+	}
+
+	/**
+	 * Robot moves one step forward and updates internal step counter
+	 * @throws Exception if robot hits obstacle or runs out of energy
+	 */
+	protected void move1StepForward() throws Exception {
+		robot.move(1);
+		num_steps++ ;
+	}
+
+	/**
+	 * Robot moves forward in a straight line to the goal
+	 * @precondition goal lies in forward direction
+	 * @throws Exception if robot hits obstacle or runs out of energy
+	 */
+	protected void drive2GoalAhead() throws Exception {
+		while (!robot.isAtGoal()) {
+			move1StepForward();
+		}
+	}
+	/**
+	 * If robot entered a room, this method helps to make the robot find
+	 * an exit and leave the room.
+	 * @precondition isInRoom is true
+	 * @precondition cell behind robot is outside of room
+	 * @precondition door has width of 1 cell
+	 * @throws Exception
+	 */
+	protected void leaveRoomJustEntered() throws Exception {
+		// situation: robot just entered the room
+		// exit is behind the robot
+		// Case 1: there is a wall on the left hand side
+		// Case 2: there is no wall on the left hand side
+		// General idea: 
+		// robot can follow wall by turning left and searching exit
+		// by following that wall
+		// 
+		if (0 == robot.distanceToObstacle(Robot.Direction.LEFT)) {
+			// Case 1: entering room at corner, follow wall on left hand side
+			// no adjustment necessary
+		} 
+		else {
+			// Case 2: entering room with no wall on left, 
+			// turn left and move forward, 
+			// should have a wall on the left hand side now
+			robot.rotate(Robot.Turn.LEFT);
+			move1StepForward();
+			// either wall on left now, one can follow that wall
+			// or hitting an exit, in any case followWallToExitRoom 
+			// is ok with this
+		}
+		// at this point robot has a wall on the left hand side
+		followWallToExitRoom();
+	}
+	/**
+	 * If robot is inside a room and has a wall to the left, 
+	 * this method helps to make the robot find
+	 * an exit and leave the room.
+	 * @precondition isInRoom is true
+	 * @precondition robot is on the border of the room, i.e. 
+	 * it has either a wall to its left or an exit
+	 * @throws Exception
+	 */
+	protected void followWallToExitRoom() throws Exception {
+		System.out.println("Wallfollower:followWallToExitRoom") ;
+		int right = 0 ;
+		while (robot.isInsideRoom()) {
+			int forward = robot.distanceToObstacle(Robot.Direction.FORWARD) ;
+			int left = robot.distanceToObstacle(Robot.Direction.LEFT) ;
+			// special case: can see exit
+			if (Integer.MAX_VALUE == forward) {
+				System.out.println("Wallfollower:can see exit" + forward + " vs max int" + Integer.MAX_VALUE) ;
+				if (!robot.canSeeGoal(Robot.Direction.FORWARD)) {
+					throw new Exception("Wallfollower:followWallToExitRoom: inconsistent distance measurement: " + forward + " vs max int" + Integer.MAX_VALUE) ;
+				}
+				drive2GoalAhead();
+				return ;
+			}
+			// walk along the wall till robot finds an exit to the left
+			// or faces the opposite wall
+			while (0 < forward && 0 == left) {
+				forward-- ;
+				try {
+					move1StepForward();
+				}
+				catch (Exception e) {
+					System.out.println("Move forward failed, forward value:" + forward) ;
+					throw e ;
+				}
+				left = robot.distanceToObstacle(Robot.Direction.LEFT) ;
+			}
+			// exit to left? take it and leave
+			if (0 < left) {
+				robot.rotate(Robot.Turn.LEFT);
+				if (robot.isAtGoal()) {
+					// better stop right here, facing the exit
+					return ;
+				}
+				// move outside the room
+				move1StepForward();
+				return ;
+			}
+			// no exit to the left and wall in front, turn right at corner
+			// 0 == f and 0 == l
+			robot.rotate(Robot.Turn.RIGHT);
+			right++ ; 
+			if (4 < right) {
+				throw new Exception("Can not exit room with 4 right turns!") ;
+			}
+			// continue with loop
+		}
+	}
+	/**
+	 * If robot is initially position somewhere inside a room, 
+	 * this methods make it leave the room
+	 * @throws Exception
+	 */
+	protected void leaveRoom() throws Exception {
+		// situation: robot is positioned somewhere in a room
+		// need to find a wall to follow
+		int forward = robot.distanceToObstacle(Robot.Direction.FORWARD) ;
+		int left = robot.distanceToObstacle(Robot.Direction.LEFT) ;
+		// pick the wall that is closer and move to it
+		if (left < forward) {
+			robot.rotate(Robot.Turn.LEFT);
+			forward = left ;
+		}
+		while (forward > 0) {
+			move1StepForward();
+			forward-- ;
+		}
+		// robot is still in room and faces a wall now
+		if (robot.isInsideRoom()) {
+			robot.rotate(Robot.Turn.RIGHT);
+			// has wall to its left
+			followWallToExitRoom() ;
+		}
+		// else {
+		// robot accidentally hit an exit 
+		// and already moved outside the room
+		// proceed with regular wall follower strategy
+	}
+
+	
+	@Override
+	public float getEnergyConsumption() {
+		float result = battery_level_at_beginning - 	robot.getBatteryLevel() ;	
+		System.out.println("energy consumption: " + result) ;
+		return result ;
+	}
+
+	@Override
+	public int getPathLength() {
+		return num_steps;
+	}
+
+}

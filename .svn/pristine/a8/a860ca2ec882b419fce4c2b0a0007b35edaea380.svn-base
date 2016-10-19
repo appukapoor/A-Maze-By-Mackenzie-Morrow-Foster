@@ -1,0 +1,139 @@
+package edu.wm.cs.cs301.MackenzieMorrowFoster.falstad;
+
+import edu.wm.cs.cs301.MackenzieMorrowFoster.falstad.Robot.Turn;
+import edu.wm.cs.cs301.MackenzieMorrowFoster.ui.GeneratingActivity;
+
+/**
+ * This class implements the RobotDriver interface.
+ * It uses MAGIC to direct a robot through the maze and to the exit.
+ * @author MackenzieFoster
+ *
+ */
+public class Wizard implements RobotDriver{
+
+	Robot robot = new BasicRobot();
+	GeneratingActivity generateMe = new GeneratingActivity();
+	Maze maze = new Maze();
+	int width = maze.mazew;
+	int height = maze.mazeh;
+	int distanceTraveled = 0;
+	int posX = maze.px;
+	int posY = maze.py;
+	Distance mazedists;
+	
+	
+	/**
+	 * Assigns a robot platform to the driver. 
+	 * The driver uses a robot to perform, this method provides it with this necessary information.
+	 * @param r robot to operate
+	 */
+	@Override
+	public void setRobot(Robot r) {
+		// TODO Auto-generated method stub
+		robot = r;
+	}
+
+	/**
+	 * Provides the robot driver with information on the dimensions of the 2D maze
+	 * measured in the number of cells in each direction.
+	 * @param width of the maze
+	 * @param height of the maze
+	 * @precondition 0 <= width, 0 <= height of the maze.
+	 */
+	@Override
+	public void setDimensions(int width, int height) {
+		// TODO Auto-generated method stub
+		this.width = width;
+		this.height = height;
+	}
+
+	/**
+	 * Provides the robot driver with information on the distance to the exit.
+	 * @param distance gives the length of path from current position to the exit.
+	 * @precondition null != distance, a full functional distance object for the current maze.
+	 */
+	@Override
+	public void setDistance(Distance distance) {
+		mazedists = distance;
+	}
+
+	/**
+	 * This algorithm finds the exit by finding one of its neighboring cells
+	 * that has a closer distance and goes to that cell.
+	 * @return true if driver successfully reaches the exit, false otherwise
+	 * @throws exception if robot stopped due to some problem, e.g. lack of energy
+	 */
+	@Override
+	public boolean drive2Exit() throws Exception {
+		int sx = posX;
+		int sy = posY;
+		int d = mazedists.dists[sx][sy]; // current distance towards end position
+		while (d > 1) {
+			// find the direction towards the end position
+			int n = getDirectionIndexTowardsSolution(sx, sy, d) ;
+			if (4 == n)
+			{
+				System.out.println("ERROR: draw_solution cannot identify direction towards solution!") ;
+				// TODO: perform proper error handling here
+				//return ;
+			}
+			int dx = Constants.DIRS_X[n];
+			int dy = Constants.DIRS_Y[n];
+			int dn = mazedists.dists[sx+dx][sy+dy];
+			// update loop variables for current position (sx,sy) and distance d for next iteration
+			sx += dx;
+			sy += dy;
+			d = dn;
+			//turn until my robot faces the direction of (dx,dy)
+			int[] currDir = robot.getCurrentDirection();
+			while (currDir[0] != dx && currDir[1] != dy) {
+				robot.rotate(Turn.LEFT);
+				currDir = robot.getCurrentDirection();
+			}
+			robot.move(1);
+			distanceTraveled++;
+			if (((BasicRobot) robot).getBatteryLevel() <= 0) {throw new Exception();}
+		}
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @param x coordinate
+	 * @param y coordinate
+	 * @param d current distance towards end position
+	 * @return the direction index toward the solution
+	 */
+	public int getDirectionIndexTowardsSolution(int x, int y, int d) {
+		for (int n = 0; n < 4; n++) {
+			if (maze.mazecells.hasMaskedBitsTrue(x,y,Constants.MASKS[n]))
+				continue;
+				int dx = Constants.DIRS_X[n];
+				int dy = Constants.DIRS_Y[n];
+				int dn = mazedists.dists[x+dx][y+dy];
+				if (dn < d)
+					return n ;
+		}
+		return 4 ;
+	}
+
+	/**
+	 * Returns the amount of energy used up trying to find the exit.
+	 */
+	@Override
+	public float getEnergyConsumption() {
+		// TODO Auto-generated method stub
+		float energyConsumed = 2500 - robot.getBatteryLevel();
+		System.out.println(energyConsumed);
+		return energyConsumed;
+	}
+
+	/**
+	 * Returns the total length of the journey in number of steps taken.
+	 */
+	@Override
+	public int getPathLength() {
+		return distanceTraveled;
+	}
+
+}

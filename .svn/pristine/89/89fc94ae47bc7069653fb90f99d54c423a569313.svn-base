@@ -1,0 +1,16 @@
+package edu.wm.cs.cs301.MackenzieMorrowFoster;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
+
+public class GeneratingActivity extends Activity {
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_generate);
+		Log.v("GeneratingActivity", "Created activity_generate");
+	}
+	
+}
